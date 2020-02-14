@@ -4,7 +4,7 @@ import torch.nn as nn
 from models.RedNet import RedNet
 
 class heat_cell(nn.Module):
-
+    # PhICNet cell for heat system
     def __init__(self, num_blocks=3):
         super(heat_cell, self).__init__()
         self.alpha = torch.empty(1, requires_grad=True) # diffusivity

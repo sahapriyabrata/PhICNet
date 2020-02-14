@@ -4,10 +4,10 @@ import torch.nn as nn
 from models.RedNet import RedNet
 
 class wave_cell(nn.Module):
-
+    # PhICNet cell for wave system
     def __init__(self):
         super(wave_cell, self).__init__()
-        self.c2 = torch.empty(1, requires_grad=True) # wave speed
+        self.c2 = torch.empty(1, requires_grad=True) # wave_speed ** 2
         nn.init.uniform_(self.c2, 0, 1.)
         self.sf = torch.empty(1, requires_grad=True) # scale factor for source map
         nn.init.normal_(self.sf, 0, 0.01)

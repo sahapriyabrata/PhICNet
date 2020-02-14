@@ -3,6 +3,7 @@ import torch.nn as nn
 
 
 def initialize_weights(module):
+    # initialize kernels of a module
     for m in module.modules():
         if isinstance(m, nn.Conv2d) or isinstance(m, nn.ConvTranspose2d):
             nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
@@ -16,6 +17,7 @@ def initialize_weights(module):
             nn.init.constant_(m.bias, 0)
 
 class conv_block(nn.Module):
+    # a convolutional block with two conv layers
     def __init__(self, in_channels=1, out_channels=1, stride=1, init_weights=True):
         super(conv_block, self).__init__()
         self.conv1 = nn.Conv2d(in_channels, 32, kernel_size=3, stride=stride, padding=1)
@@ -32,6 +34,7 @@ class conv_block(nn.Module):
         return x 
 
 class t_conv_block(nn.Module):
+    # a transposed convolution block with two transposed conv layers
     def __init__(self, in_channels=1, out_channels=1, stride=1, init_weights=True):
         super(t_conv_block, self).__init__()
         self.tconv1 = nn.ConvTranspose2d(in_channels, 32, kernel_size=3, stride=1, padding=1)
@@ -47,6 +50,7 @@ class t_conv_block(nn.Module):
         return x
 
 class RedNet(nn.Module):
+    # Residual encoder-decoder network with M=3 or M=5
     def __init__(self, num_blocks=3, in_channels=1,  out_channels=1, positive=True):
         super(RedNet, self).__init__()
         self.positive = positive
