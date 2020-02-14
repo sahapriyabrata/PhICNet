@@ -53,6 +53,10 @@ net.sf = checkpoint['sf']
 
 net = net.eval()
 
+if not os.path.exists('./results/wave_system/'):
+    os.makedirs('./results/wave_system/snr/')
+    os.makedirs('./results/wave_system/gt/')
+    os.makedirs('./results/wave_system/pred/')
 error_file = open(os.path.join('./results/wave_system/snr/') + 'snr_{}.txt'.format(args.seqNo), 'w')
 
 criterion = nn.MSELoss()
