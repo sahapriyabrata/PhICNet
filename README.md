@@ -12,7 +12,7 @@ Compatible with Python 3.5 and Pytorch 1.1.0
 
 ## Usage
 
-Dataset and pre-trained models can be downloaded from these two links: [dataset](http://bit.ly/31TPu2I) and [models](http://bit.ly/2uAov0g).
+Dataset and pre-trained models can be downloaded from these two links: [dataset](http://bit.ly/2wbyE3G) and [models](http://bit.ly/2uAov0g).
 
 #### Training
 To train heat system, run `python scripts/train_heat_system.py --dataset ./dataset/train_heat_maps.npy`
