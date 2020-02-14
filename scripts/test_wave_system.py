@@ -28,7 +28,7 @@ if torch.cuda.is_available():
 else:
     torch.set_default_tensor_type('torch.FloatTensor')
 
-# Load dataset
+# Load and process dataset
 obs_maps = np.load(args.dataset)
 if normalization:
     omin, omax = -0.07274206, 0.397301 # minimum and maximum value in training dataset
@@ -45,6 +45,7 @@ else:
 net = wave_cell()
 if torch.cuda.is_available():
     net = net.cuda()
+# Load weights from trained model
 checkpoint = torch.load(args.model_path)
 net.load_state_dict(checkpoint)
 checkpoint = torch.load(args.param_path)
@@ -53,17 +54,21 @@ net.sf = checkpoint['sf']
 
 net = net.eval()
 
+# Create output paths
 if not os.path.exists('./results/wave_system/'):
     os.makedirs('./results/wave_system/snr/')
     os.makedirs('./results/wave_system/gt/')
     os.makedirs('./results/wave_system/pred/')
 error_file = open(os.path.join('./results/wave_system/snr/') + 'snr_{}.txt'.format(args.seqNo), 'w')
 
+# Define loss/error function
 criterion = nn.MSELoss()
 
+# Initial observation
 X = obs_maps[0:1]
 y = obs_maps[1:]
 
+# Iterative prediction
 y_pred = torch.zeros_like(y)
 temporal_order = 2
 for t in range(199):
@@ -83,6 +88,7 @@ if normalization:
     y = y * (omax - omin) + omin
     y_pred = y_pred * (omax - omin) + omin
 
+# Save SNR and visual maps
 for t in range(temporal_order, 199):
     snr = torch.norm(y[t])/torch.dist(y[t], y_pred[t])
     snr = 20 * torch.log10(snr)

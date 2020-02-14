@@ -26,7 +26,7 @@ if torch.cuda.is_available():
 else:
     torch.set_default_tensor_type('torch.FloatTensor')
 
-# Load dataset and make splits
+# Load and process dataset and make train-val splits
 print("Loading dataset\n")
 obs_maps = np.load(args.dataset)
 print("Preparing data for training\n")
@@ -55,6 +55,7 @@ if torch.cuda.is_available():
 net = wave_cell()
 if torch.cuda.is_available():
     net = net.cuda()
+# Load any pretrained model if available
 if args.model_path is not None:
     checkpoint = torch.load(args.model_path)
     net.load_state_dict(checkpoint)
@@ -63,6 +64,7 @@ if args.model_path is not None:
     net.sf = checkpoint['sf']
 net = net.train()
 
+# Unrolling PhICNet cell for given sequence length
 def iter_cell(net, X):
     y = []
     V = []
@@ -77,6 +79,7 @@ def iter_cell(net, X):
         V_hat.append(Vt_hat)
 
     return  y, V, V_hat
+
 
 # Define optimizer and loss
 optimizer = optim.Adam([
@@ -99,12 +102,17 @@ print("Starting training\n")
 for epoch in range(num_epochs):
     train_error = 0.
     for step in range(train_steps):
+        # Get batch data
         X = train_obs_maps[step*batch_size : (step+1)*batch_size]
         y = train_obs_maps[step*batch_size : (step+1)*batch_size, 3]
+        # Forward
         y_pred, V, V_hat = iter_cell(net, X)
+        # Compute loss
         train_loss = criterion(y_pred[-2], y) + criterion(V_hat[-2], V[-1])
+        # Add sparsity loss if normalization is disabled
         if not normalization:
             train_loss += lambd * torch.mean(torch.abs(V_hat[-2])) 
+        # Backprop
         optimizer.zero_grad()
         train_loss.backward()
         optimizer.step()
@@ -114,6 +122,7 @@ for epoch in range(num_epochs):
            nn.init.uniform_(net.sf, 0, 0.01)
         train_error += train_loss.item()
         
+    # Validation
     with torch.no_grad():
         val_error = 0.
         for vstep in range(val_steps):
@@ -127,11 +136,13 @@ for epoch in range(num_epochs):
                                                                       train_error/train_steps,
                                                                       val_error/val_steps))
 
+    # Exponential decay learning rate 
     for g in optimizer.param_groups:
         if g['lr'] > 0.0001:
             g['lr'] *= 0.99
         print("LR: {}".format(g['lr']))
 
+    # Save models
     torch.save(net.state_dict(), 'saved_models/wave_system/model-{}.ckpt'.format(epoch))
     dict = {}
     dict['c2'] = net.c2
