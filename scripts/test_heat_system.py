@@ -15,13 +15,7 @@ parser.add_argument('--dataset', default='./dataset/test_heat_maps.npy', help='P
 parser.add_argument('--model_path', default=None, help='Path to saved models')
 parser.add_argument('--param_path', default=None, help='Path to saved parameters')
 parser.add_argument('--seqNo', default=0, help='Seq No.')
-parser.add_argument('--normalization', type=int, default=1, help='Is the model trained with normalized data? 1 or 0')
 args = parser.parse_args()
-if args.normalization == 0:
-    normalization = False
-else:
-    normalization = True
-
 
 if torch.cuda.is_available():
     torch.set_default_tensor_type('torch.cuda.FloatTensor')
@@ -30,9 +24,8 @@ else:
 
 # Load and process dataset
 obs_maps = np.load(args.dataset)
-if normalization:
-    omin, omax = 2.8593703e-07, 0.23825705 # minimum and maximum value in training dataset
-    obs_maps = (obs_maps - omin) / (omax - omin)
+omin, omax = 2.8593703e-07, 0.23825705 # minimum and maximum value in training dataset
+obs_maps = (obs_maps - omin) / (omax - omin)
 num_samples, num_frames, H, W = obs_maps.shape
 
 obs_maps = obs_maps[int(args.seqNo)]
@@ -83,10 +76,9 @@ for t in range(199):
         X = obs_maps[t+1:t+2]
     else:
         X = pred
-
-if normalization:
-    y = y * (omax - omin) + omin
-    y_pred = y_pred * (omax - omin) + omin
+        
+y = y * (omax - omin) + omin
+y_pred = y_pred * (omax - omin) + omin
 
 # Save SNR and visual maps
 for t in range(temporal_order, 199):
