@@ -13,13 +13,7 @@ parser = argparse.ArgumentParser(description='Paths, hyperparameters and switche
 parser.add_argument('--dataset', default=None, help='Path to dataset')
 parser.add_argument('--model_path', default=None, help='Path to saved model')
 parser.add_argument('--param_path', default=None, help='Path to saved params')
-parser.add_argument('--normalization', type=int, default=1, help='Normalize the data? 1 or 0')
 args = parser.parse_args()
-if args.normalization == 0:
-    normalization = False
-else:
-    normalization = True
-
 
 if torch.cuda.is_available():
     torch.set_default_tensor_type('torch.cuda.FloatTensor')
@@ -30,9 +24,8 @@ else:
 print("Loading dataset\n")
 obs_maps = np.load(args.dataset)
 print("Preparing data for training\n")
-if normalization:
-    omin, omax = np.min(obs_maps), np.max(obs_maps)
-    obs_maps = (obs_maps - omin) / (omax - omin)
+omin, omax = np.min(obs_maps), np.max(obs_maps)
+obs_maps = (obs_maps - omin) / (omax - omin)
 num_samples, num_frames, H, W = obs_maps.shape
 
 T0 = obs_maps[:, :-3].reshape(-1, 1, H, W)
@@ -91,7 +84,7 @@ optimizer = optim.Adam([
 
 criterion = nn.MSELoss()
 
-lambd = 1e-5
+lambd = 1e-7
 
 # Train
 num_epochs = 200
@@ -108,10 +101,7 @@ for epoch in range(num_epochs):
         # Forward
         y_pred, V, V_hat = iter_cell(net, X)
         # Compute loss
-        train_loss = criterion(y_pred[-2], y) + criterion(V_hat[-2], V[-1])
-        # Add sparsity loss if normalization is disabled
-        if not normalization:
-            train_loss += lambd * torch.mean(torch.abs(V_hat[-2])) 
+        train_loss = criterion(y_pred[-2], y) + criterion(V_hat[-2], V[-1]) + lambd * torch.mean(torch.abs(V_hat[-2])) 
         # Backprop
         optimizer.zero_grad()
         train_loss.backward()
