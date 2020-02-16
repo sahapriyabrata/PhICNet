@@ -9,7 +9,7 @@ sys.path.append('./')
 
 from models.wave_cell import wave_cell
 
-parser = argparse.ArgumentParser(description='Paths, hyperparameters and switches')
+parser = argparse.ArgumentParser(description='Paths')
 parser.add_argument('--dataset', default=None, help='Path to dataset')
 parser.add_argument('--model_path', default=None, help='Path to saved model')
 parser.add_argument('--param_path', default=None, help='Path to saved params')
