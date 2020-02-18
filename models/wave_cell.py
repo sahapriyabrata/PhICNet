@@ -5,7 +5,7 @@ from models.RedNet import RedNet
 
 class wave_cell(nn.Module):
     # PhICNet cell for wave system
-    def __init__(self):
+    def __init__(self, num_blocks=3):
         super(wave_cell, self).__init__()
         self.c2 = torch.empty(1, requires_grad=True) # wave_speed ** 2
         nn.init.uniform_(self.c2, 0, 1.)
@@ -20,7 +20,7 @@ class wave_cell(nn.Module):
         self.wcu.requires_grad = False
         self.whc = torch.Tensor([2, -1])
         self.whc.requires_grad = False
-        self.RedNet = RedNet()
+        self.RedNet = RedNet(num_blocks=num_blocks)
 
     def forward(self, inputs, init_states=None):
         batch_size, height, width = inputs.shape
