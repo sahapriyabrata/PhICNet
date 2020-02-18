@@ -5,7 +5,7 @@ from models.RedNet import RedNet
 
 class heat_cell(nn.Module):
     # PhICNet cell for heat system
-    def __init__(self, num_blocks=3):
+    def __init__(self):
         super(heat_cell, self).__init__()
         self.alpha = torch.empty(1, requires_grad=True) # diffusivity
         nn.init.uniform_(self.alpha, 0, 1.)
@@ -20,7 +20,7 @@ class heat_cell(nn.Module):
         self.wcu.requires_grad = False
         self.whc = torch.Tensor([1])
         self.whc.requires_grad = False
-        self.RedNet = RedNet(num_blocks=num_blocks)
+        self.RedNet = RedNet(num_blocks=3, hidden_channels=32)
 
     def forward(self, inputs, init_states=None):
         batch_size, height, width = inputs.shape
