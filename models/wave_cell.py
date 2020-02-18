@@ -20,7 +20,7 @@ class wave_cell(nn.Module):
         self.wcu.requires_grad = False
         self.whc = torch.Tensor([2, -1])
         self.whc.requires_grad = False
-        self.RedNet = RedNet(num_blocks=3, hidden_channels=64, positive=False)
+        self.RedNet = RedNet(num_blocks=3, hidden_channels=32)
 
     def forward(self, inputs, init_states=None):
         batch_size, height, width = inputs.shape
