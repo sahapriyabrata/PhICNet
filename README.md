@@ -1,6 +1,6 @@
 # PhICNet
 
-Repository for our work **PhICNet: Physics-Incorporated Convolutional Recurrent Neural Networks for Modeling Dynamical Systems**
+Repository for our work [**Physics-Incorporated Convolutional Recurrent Neural Networks for Source Identification and Forecasting of Dynamical Systems**](https://arxiv.org/abs/2004.06243)
 
 ## Installation
 
