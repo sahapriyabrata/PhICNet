@@ -4,12 +4,12 @@ Repository for our work [**Physics-Incorporated Convolutional Recurrent Neural N
 
 If you find our work useful, please don't forget to cite. 
 ```
-@article{saha2020physics,
-  title={Physics-Incorporated Convolutional Recurrent Neural Networks for Source Identification and Forecasting of Dynamical Systems},
+@article{saha2021physics,
+  title={Physics-incorporated convolutional recurrent neural networks for source identification and forecasting of dynamical systems},
   author={Saha, Priyabrata and Dash, Saurabh and Mukhopadhyay, Saibal},
-  journal={arXiv e-prints},
-  pages={arXiv--2004},
-  year={2020}
+  journal={Neural Networks},
+  year={2021},
+  publisher={Elsevier}
 }
 ```
 
